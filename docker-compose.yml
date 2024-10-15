@@ -1,0 +1,28 @@
+version: "3.6"
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_USER: myuser
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  hasura:
+    image: hasura/graphql-engine:v2.20.1 # Sử dụng phiên bản ổn định
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://myuser:mysecretpassword@postgres:5432/mydb
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
